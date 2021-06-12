@@ -1,0 +1,39 @@
+{
+  "name": "plex-take-some",
+  "version": "1.0.0",
+  "description": "Take a subset of a playlest and download it to a local dir",
+  "main": "index.js",
+  "bin": "index.js",
+  "scripts": {
+    "test": "tap test/*"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ryanramage/plex-take-some.git"
+  },
+  "keywords": [
+    "plex",
+    "download"
+  ],
+  "author": "Ryan Ramage",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ryanramage/plex-take-some/issues"
+  },
+  "homepage": "https://github.com/ryanramage/plex-take-some#readme",
+  "dependencies": {
+    "async": "^3.2.0",
+    "bytes": "^3.1.0",
+    "lodash.get": "^4.4.2",
+    "lodash.shuffle": "^4.2.0",
+    "rc": "^1.2.8",
+    "request": "^2.88.2",
+    "ssh2": "^0.8.9",
+    "unique-random-array": "^2.0.0",
+    "xml2js": "^0.4.23"
+  },
+  "devDependencies": {
+    "tap": "^15.0.6",
+    "tape": "^5.2.2"
+  }
+}
