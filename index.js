@@ -8,6 +8,7 @@ const download = require('./download')
 
 const options = require('rc')('plextakesome', {
   host: 'plex.host.com',
+  plexPort: null,
   playlist: 1000,
   token: 'XXXXXXXXX',
   sshPort: 22,
@@ -17,7 +18,9 @@ const options = require('rc')('plextakesome', {
   maxBytes: '1gb'
 })
 let maxBytes = bytes.parse(options.maxBytes)
-let url = `http://${options.host}/playlists/${options.playlist}/items`
+let hostname = `${options.host}`
+if (options.plexPort) hostname = `${hostname}:${options.plexPort}`
+let url = `http://${hostname}/playlists/${options.playlist}/items`
 let qs = {
   'X-Plex-Token': options.token
 }
