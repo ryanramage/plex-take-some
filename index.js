@@ -35,7 +35,8 @@ request(opts, (err, resp, body) => {
       let media = _get(row, 'Media[0]')
       let file = _get(media, 'Part[0].$.file')
       let size = Number(_get(media, 'Part[0].$.size'))
-      items.push({title, artist, file, size})
+      let partId = _get(media, 'Part[0].$.id')
+      items.push({title, artist, file, size, partId})
     })
     let {subset} = pick(items, bytes.parse(options.maxBytes))
     download(options, subset, (err, files) => {
