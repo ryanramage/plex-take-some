@@ -8,12 +8,9 @@ const download = require('./download')
 
 const options = require('rc')('plextakesome', {
   host: 'plex.host.com',
-  plexPort: null,
   playlist: 1000,
   token: 'XXXXXXXXX',
-  sshPort: 22,
-  username: 'shelluser',
-  password: 'password',
+  plexPort: null,
   saveDir: '/home/someone/download',
   maxBytes: '1gb'
 })
