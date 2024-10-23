@@ -18,7 +18,12 @@ maxBytes=1gb
 
 2. Run plex-take-some
 
-This will download files from your Plex server to the specified saveDir, up to the maxBytes limit.
+You can use the -l flag to list all available playlists:
+```
+plex-take-some -l
+```
+
+Without any flags, it will download files from your Plex server to the specified saveDir, up to the maxBytes limit.
 
 Configuration Options:
 - host: Your Plex server hostname
