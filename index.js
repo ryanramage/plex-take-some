@@ -1,5 +1,7 @@
 #!/usr/bin/env node
 const _get = require('lodash.get')
+const fs = require('fs')
+const path = require('path')
 const request = require('request')
 const parseString = require('xml2js').parseString
 const bytes = require('bytes')
@@ -13,7 +15,8 @@ const options = require('rc')('plextakesome', {
   plexPort: null,
   saveDir: '/home/someone/download',
   maxBytes: '1gb',
-  list: null
+  list: null,
+  clearSaveDir: false
 })
 let hostname = `${options.host}`
 if (options.plexPort) hostname = `${hostname}:${options.plexPort}`
@@ -58,6 +61,17 @@ if (options.list) {
         items.push({title, artist, file, size, partId})
       })
       let {subset} = pick(items, bytes.parse(options.maxBytes))
+      
+      // Clear save directory if flag is set
+      if (options.clearSaveDir) {
+        const files = fs.readdirSync(options.saveDir)
+        files.forEach(file => {
+          const filePath = path.join(options.saveDir, file)
+          fs.unlinkSync(filePath)
+        })
+        console.log(`Cleared contents of ${options.saveDir}`)
+      }
+
       download(options, subset, (err, files) => {
         if (err) return console.log('an error occurred', err)
         console.log(`download complete: ${options.saveDir}`)
