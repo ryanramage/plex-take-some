@@ -1,6 +1,6 @@
 {
   "name": "plex-take-some",
-  "version": "2.1.0",
+  "version": "2.1.1",
   "description": "Take a subset of a playlest and download it to a local dir",
   "main": "index.js",
   "bin": "index.js",
