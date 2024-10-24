@@ -1,7 +1,6 @@
 #!/usr/bin/env node
 const _get = require('lodash.get')
 const request = require('request')
-const argv = require('minimist')(process.argv.slice(2))
 const parseString = require('xml2js').parseString
 const bytes = require('bytes')
 const pick = require('./pick')
@@ -13,18 +12,19 @@ const options = require('rc')('plextakesome', {
   token: 'XXXXXXXXX',
   plexPort: null,
   saveDir: '/home/someone/download',
-  maxBytes: '1gb'
+  maxBytes: '1gb',
+  list: null
 })
 let hostname = `${options.host}`
 if (options.plexPort) hostname = `${hostname}:${options.plexPort}`
 
-if (argv.l) {
+if (options.list) {
   // List playlists
   let url = `http://${hostname}/playlists`
   let qs = {
     'X-Plex-Token': options.token
   }
-  request({url, qs}, (err, resp, body) => {
+  request({url, qs}, (err, _resp, body) => {
     if (err) return console.error('Error fetching playlists:', err)
     parseString(body, (err, result) => {
       if (err) return console.error('Error parsing response:', err)
@@ -39,30 +39,30 @@ if (argv.l) {
   })
 } else {
   // Download tracks
-  let maxBytes = bytes.parse(options.maxBytes)
   let url = `http://${hostname}/playlists/${options.playlist}/items`
-let qs = {
-  'X-Plex-Token': options.token
-}
-let opts = {url, qs}
-request(opts, (err, resp, body) => {
-  parseString(body, (err, result) => {
-    let rows = _get(result, 'MediaContainer.Track', [])
-    let items = []
-    rows.forEach(row => {
-      let title = _get(row, '$.title')
-      let artist = _get(row, '$.grandparentTitle')
-      let media = _get(row, 'Media[0]')
-      let file = _get(media, 'Part[0].$.file')
-      let size = Number(_get(media, 'Part[0].$.size'))
-      let partId = _get(media, 'Part[0].$.id')
-      items.push({title, artist, file, size, partId})
-    })
-    let {subset} = pick(items, bytes.parse(options.maxBytes))
-    download(options, subset, (err, files) => {
-      if (err) return console.log('an error occurred', err)
-      console.log(`download complete: ${options.saveDir}`)
-      console.log(files)
+  let qs = {
+    'X-Plex-Token': options.token
+  }
+  let opts = {url, qs}
+  request(opts, (_err, _resp, body) => {
+    parseString(body, (_err, result) => {
+      let rows = _get(result, 'MediaContainer.Track', [])
+      let items = []
+      rows.forEach(row => {
+        let title = _get(row, '$.title')
+        let artist = _get(row, '$.grandparentTitle')
+        let media = _get(row, 'Media[0]')
+        let file = _get(media, 'Part[0].$.file')
+        let size = Number(_get(media, 'Part[0].$.size'))
+        let partId = _get(media, 'Part[0].$.id')
+        items.push({title, artist, file, size, partId})
+      })
+      let {subset} = pick(items, bytes.parse(options.maxBytes))
+      download(options, subset, (err, files) => {
+        if (err) return console.log('an error occurred', err)
+        console.log(`download complete: ${options.saveDir}`)
+        console.log(files)
+      })
     })
   })
-})}
+}
