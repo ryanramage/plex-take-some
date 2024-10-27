@@ -64,7 +64,6 @@ if (options.list) {
       
       // Output total size of picked files
       const totalSize = subset.reduce((sum, item) => sum + item.size, 0)
-      console.log(`Total size of picked files: ${bytes(totalSize)}`)
       
       // Clear save directory if flag is set
       if (options.clearSaveDir) {
@@ -78,8 +77,9 @@ if (options.list) {
 
       download(options, subset, (err, files) => {
         if (err) return console.log('an error occurred', err)
-        console.log(`download complete: ${options.saveDir}`)
-        console.log(files)
+        console.log(`finished. Files saved to: ${options.saveDir}`)
+        //console.log(files)
+        console.log(`Total size of picked files: ${bytes(totalSize)}`)
       })
     })
   })
