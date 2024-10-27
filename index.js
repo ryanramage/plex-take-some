@@ -62,6 +62,10 @@ if (options.list) {
       })
       let {subset} = pick(items, bytes.parse(options.maxBytes))
       
+      // Output total size of picked files
+      const totalSize = subset.reduce((sum, item) => sum + item.size, 0)
+      console.log(`Total size of picked files: ${bytes(totalSize)}`)
+      
       // Clear save directory if flag is set
       if (options.clearSaveDir) {
         const files = fs.readdirSync(options.saveDir)
