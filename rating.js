@@ -2,7 +2,7 @@ const { loadMusicMetadata } = require('music-metadata');
 
 const ratingRegex = /!(?<rating>\d+)\s?(?<mood>.*)/
 
-module.exports = (fullFilePath) => new Promise (resolve, reject) => {
+module.exports = (fullFilePath) => new Promise((resolve, reject) => {
   try {
     // Parse the metadata from the audio file
     //
