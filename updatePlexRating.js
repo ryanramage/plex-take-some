@@ -18,10 +18,11 @@ function updatePlexRating(config, file) {
           
         
         // Construct Plex API URL for rating update using plexId from ID3 tag
-        const url = `http://${config.host}${config.plexPort ? ':' + config.plexPort : ''}/library/metadata/${plexId}/rate`
+        const url = `http://${config.host}${config.plexPort ? ':' + config.plexPort : ''}/:/rate`
         const qs = {
           'X-Plex-Token': config.token,
-          'rating': rating
+          'rating': rating,
+          'identifier': `com.plexapp.plugins.library://metadata/${plexId}`
         }
 
         console.log(url)
