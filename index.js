@@ -7,6 +7,7 @@ const parseString = require('xml2js').parseString
 const bytes = require('bytes')
 const pick = require('./pick')
 const download = require('./download')
+const processRatings = require('./plexrating')
 
 const options = require('rc')('plextakesome', {
   host: 'plex.host.com',
@@ -16,12 +17,17 @@ const options = require('rc')('plextakesome', {
   saveDir: '/home/someone/download',
   maxBytes: '1gb',
   list: null,
-  clearSaveDir: false
+  clearSaveDir: false,
+  rating: false
 })
 let hostname = `${options.host}`
 if (options.plexPort) hostname = `${hostname}:${options.plexPort}`
 
-if (options.list) {
+if (options.rating) {
+  // Process ratings mode
+  processRatings(options)
+    .catch(err => console.error('Rating processing failed:', err))
+} else if (options.list) {
   // List playlists
   let url = `http://${hostname}/playlists`
   let qs = {
