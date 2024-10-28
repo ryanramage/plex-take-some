@@ -21,12 +21,17 @@ function updatePlexRating(config, file) {
         const url = `http://${config.host}${config.plexPort ? ':' + config.plexPort : ''}/:/rate`
         const qs = {
           'X-Plex-Token': config.token,
-          'rating': rating,
-          'identifier': `com.plexapp.plugins.library://metadata/${plexId}`
+          'rating': rating * 2, // Convert 5-star to 10-point scale
+          'identifier': `library://` + plexId,
+          'key': `/library/metadata/${plexId}`
+        }
+        const headers = {
+          'X-Plex-Client-Identifier': 'plex-take-some'
         }
 
-        console.log(url)
-        request.put({ url, qs }, (err, response) => {
+        console.log('Rating URL:', url)
+        console.log('Query params:', qs)
+        request.put({ url, qs, headers }, (err, response) => {
           if (err) return reject(err)
           if (response.statusCode !== 200) {
             return reject(new Error(`Failed to update rating: ${response.statusCode}`))
