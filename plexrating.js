@@ -7,6 +7,7 @@ function updatePlexRating(config, file) {
   return new Promise((resolve, reject) => {
     const fullPath = path.join(config.saveDir, file)
     
+    console.log('ryans test', fullPath)
     rating(fullPath)
       .then(({ rating, mood }) => {
         // Construct Plex API URL for rating update
