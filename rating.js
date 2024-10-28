@@ -1,6 +1,6 @@
 const mm = require('music-metadata')
 
-const ratingRegex = /!(?P<rating>\d+)\s?(?P<mood>.*)/
+const ratingRegex = /!(?<rating>\d+)\s?(?<mood>.*)/
 
 export const getRatingAndMood = (fullFilePath) => {
   try {
