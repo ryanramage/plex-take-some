@@ -1,4 +1,5 @@
 const { loadMusicMetadata } = require('music-metadata');
+const NodeID3 = require('node-id3');
 
 const ratingRegex = /!(?<rating>\d+)\s?(?<mood>.*)/
 
@@ -47,9 +48,16 @@ module.exports = (fullFilePath) => new Promise((resolve, reject) => {
         throw new Error('Invalid rating format in comment tag');
       }
 
+      // Read the Plex ID from publisher tag
+      const tags = NodeID3.read(fullFilePath)
+      if (!tags.publisher) {
+        throw new Error('No Plex ID found in file')
+      }
+
       const results = {
         rating: ratingAndMood.groups.rating,
         mood: ratingAndMood.groups.mood,
+        plexId: tags.publisher
       }
 
       // return the rating and mood as { rating, mood }

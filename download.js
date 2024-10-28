@@ -2,6 +2,7 @@ const request = require('request')
 const fs = require('fs')
 const async = require('async')
 const path = require('path')
+const NodeID3 = require('node-id3')
 
 module.exports = (config, picks, done) => {
   console.log('starting downloads')
@@ -29,8 +30,18 @@ function download(config, pick, done) {
   request(downloadUrl)
     .pipe(fs.createWriteStream(localPath))
     .on('finish', () => {
-      console.log(`Finished downloading: ${file}`)
-      done(null, file)
+      // Write Plex ID to publisher tag
+      const tags = {
+        publisher: pick.partId.toString()
+      }
+      NodeID3.write(tags, localPath, (err) => {
+        if (err) {
+          console.error(`Error writing ID3 tag: ${err}`)
+          return done(err)
+        }
+        console.log(`Finished downloading: ${file}`)
+        done(null, file)
+      })
     })
     .on('error', (err) => done(err))
 }
