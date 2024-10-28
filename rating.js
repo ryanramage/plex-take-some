@@ -37,22 +37,17 @@ module.exports = (fullFilePath) => new Promise((resolve, reject) => {
           : metadata.common.comment;
       }
 
-      if (!commentTag) {
-        throw new Error('No comment tag found in file');
-      }
+      if (!commentTag) return resolve({ plexId: null })
 
       // use the regex to extract the rating and mood from the comment tag
       const ratingAndMood = ratingRegex.exec(commentTag);
       
-      if (!ratingAndMood) {
-        throw new Error('Invalid rating format in comment tag');
-      }
+      if (!ratingAndMood) return resolve({ plexId: null })
 
       // Read the Plex ID from publisher tag
-      const tags = NodeID3.read(fullFilePath)
-      if (!tags.publisher) {
-        throw new Error('No Plex ID found in file')
-      }
+      const tags = NodeID3.read(fullFilePath) 
+      if (!tags.publisher) return resolve({ plexId: null })
+      
 
       const results = {
         rating: ratingAndMood.groups.rating,
@@ -64,6 +59,6 @@ module.exports = (fullFilePath) => new Promise((resolve, reject) => {
       return resolve(results)
     }))
   } catch (error) {
-    return reject(error)
+    resolve({ file: fullFilePath, error: error.message })
   }
 })
