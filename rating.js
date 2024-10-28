@@ -1,11 +1,12 @@
-const mm = require('music-metadata')
+const { loadMusicMetadata } = require('music-metadata');
 
 const ratingRegex = /!(?<rating>\d+)\s?(?<mood>.*)/
 
-export const getRatingAndMood = (fullFilePath) => {
+module.exports = (fullFilePath) => new Promise (resolve, reject) => {
   try {
     // Parse the metadata from the audio file
-    mm.parseFile(fullFilePath).then(metadata => {
+    //
+    loadMusicMetadata().then((mm) => mm.parseFile(fullFilePath).then(metadata => {
       
       // Try to find comments in different possible locations
       let commentTag = '';
@@ -46,13 +47,15 @@ export const getRatingAndMood = (fullFilePath) => {
         throw new Error('Invalid rating format in comment tag');
       }
 
-      // return the rating and mood as { rating, mood }
-      return {
+      const results = {
         rating: ratingAndMood.groups.rating,
         mood: ratingAndMood.groups.mood,
       }
-    })
+
+      // return the rating and mood as { rating, mood }
+      return resolve(results)
+    }))
   } catch (error) {
-    throw new Error(`Failed to extract rating: ${error.message}`);
+    return reject(error)
   }
-}
+})
