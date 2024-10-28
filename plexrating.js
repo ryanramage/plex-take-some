@@ -10,8 +10,8 @@ function updatePlexRating(config, file) {
     console.log('ryans test', fullPath)
     rating(fullPath)
       .then(({ rating, mood }) => {
-        // Construct Plex API URL for rating update
-        const url = `http://${config.host}${config.plexPort ? ':' + config.plexPort : ''}/library/metadata/${file.partId}/rate`
+        // Construct Plex API URL for rating update using plexId from ID3 tag
+        const url = `http://${config.host}${config.plexPort ? ':' + config.plexPort : ''}/library/metadata/${rating.plexId}/rate`
         const qs = {
           'X-Plex-Token': config.token,
           'rating': rating
