@@ -42,7 +42,7 @@ function updatePlexRating(config, file) {
 
         // Add mood update request if mood exists
         if (mood) {
-          const moodUrl = `http://${config.host}${config.plexPort ? ':' + config.plexPort : ''}/library/metadata/${plexId}/tag`
+          const moodUrl = `http://${config.host}${config.plexPort ? ':' + config.plexPort : ''}/library/sections/1/all`
           const moodQs = {
             'X-Plex-Token': config.token,
             'type': 10,
