@@ -23,6 +23,12 @@ You can use the --list flag to list all available playlists:
 plex-take-some --list
 ```
 
+Use the --rating flag to update Plex ratings based on audio file comments:
+```
+plex-take-some --rating
+```
+This will scan audio files in saveDir for comments in the format "!0-5 mood" (e.g. "!4 energetic") and update the corresponding Plex rating. The number (0-5) sets the Plex rating, and the mood is stored as a tag.
+
 Without any flags, it will download files from your Plex server to the specified saveDir, up to the maxBytes limit.
 
 Configuration Options:
