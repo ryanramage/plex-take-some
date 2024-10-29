@@ -27,13 +27,45 @@ function updatePlexRating(config, file) {
           'X-Plex-Client-Identifier': 'plex-take-some'
         }
 
-        request.put({ url, qs, headers }, (err, response) => {
-          if (err) return reject(err)
-          if (response.statusCode !== 200) {
-            return reject(new Error(`Failed to update rating: ${response.statusCode}`))
+        const updatePromises = []
+
+        // Add rating update request
+        updatePromises.push(new Promise((resolveRating, rejectRating) => {
+          request.put({ url, qs, headers }, (err, response) => {
+            if (err) return rejectRating(err)
+            if (response.statusCode !== 200) {
+              return rejectRating(new Error(`Failed to update rating: ${response.statusCode}`))
+            }
+            resolveRating()
+          })
+        }))
+
+        // Add mood update request if mood exists
+        if (mood) {
+          const moodUrl = `http://${config.host}${config.plexPort ? ':' + config.plexPort : ''}/library/metadata/${plexId}/tag`
+          const moodQs = {
+            'X-Plex-Token': config.token,
+            'type': 10,
+            'includeExternalMedia': 1,
+            'mood[0].tag.tag': mood,
+            'id': plexId
           }
-          resolve({ file, rating, mood })
-        })
+          
+          updatePromises.push(new Promise((resolveMood, rejectMood) => {
+            request.put({ url: moodUrl, qs: moodQs, headers }, (err, response) => {
+              if (err) return rejectMood(err)
+              if (response.statusCode !== 200) {
+                return rejectMood(new Error(`Failed to update mood: ${response.statusCode}`))
+              }
+              resolveMood()
+            })
+          }))
+        }
+
+        // Wait for all updates to complete
+        Promise.all(updatePromises)
+          .then(() => resolve({ file, rating, mood }))
+          .catch(err => reject(err))
       })
       .catch(err => reject(err))
   })
