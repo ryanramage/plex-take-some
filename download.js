@@ -32,7 +32,7 @@ function download(config, pick, done) {
     .on('finish', () => {
       // Write Plex ID to publisher tag
       const tags = {
-        publisher: pick.partId.toString()
+        publisher: pick.ratingKey.toString()
       }
       NodeID3.write(tags, localPath, (err) => {
         if (err) {

@@ -6,11 +6,9 @@ function updatePlexRating(config, file) {
   return new Promise((resolve, reject) => {
     const fullPath = path.join(config.saveDir, file)
     const skip = (message) => {
-      console.log(`Skipping ${file}: ${message}`)
       resolve({ file })
     }
     
-    console.log('ryans test', fullPath)
     rating(fullPath)
       .then(({ rating, mood, plexId }) => {
         if (!plexId) return skip('No Plex ID found in file, skipping')
@@ -22,15 +20,13 @@ function updatePlexRating(config, file) {
         const qs = {
           'X-Plex-Token': config.token,
           'rating': rating * 2, // Convert 5-star to 10-point scale
-          'identifier': `library://` + plexId,
-          'key': `/library/metadata/${plexId}`
+          'identifier': 'com.plexapp.plugins.library',
+          'key': `${plexId}`
         }
         const headers = {
           'X-Plex-Client-Identifier': 'plex-take-some'
         }
 
-        console.log('Rating URL:', url)
-        console.log('Query params:', qs)
         request.put({ url, qs, headers }, (err, response) => {
           if (err) return reject(err)
           if (response.statusCode !== 200) {

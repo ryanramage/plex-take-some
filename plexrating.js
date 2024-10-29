@@ -12,8 +12,10 @@ module.exports = async function processRatings(config) {
   
   for (const file of musicFiles) {
     try {
-      const result = await updatePlexRating(config, file)
-      console.log(`Updated ${file}: Rating=${result.rating}${result.mood ? ', Mood=' + result.mood : ''}`)
+      updatePlexRating(config, file).then(result => {
+        if (!result.rating) return
+        console.log(`Updated ${file}: Rating=${result.rating}${result.mood ? ', Mood=' + result.mood : ''}`)
+      })
     } catch (err) {
       console.error(`Failed to process ${file}:`, err.message)
     }

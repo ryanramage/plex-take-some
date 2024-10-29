@@ -58,13 +58,15 @@ if (options.rating) {
       let rows = _get(result, 'MediaContainer.Track', [])
       let items = []
       rows.forEach(row => {
+        console.log(JSON.stringify(row))
         let title = _get(row, '$.title')
+        let ratingKey = _get(row, '$.ratingKey')
         let artist = _get(row, '$.grandparentTitle')
         let media = _get(row, 'Media[0]')
         let file = _get(media, 'Part[0].$.file')
         let size = Number(_get(media, 'Part[0].$.size'))
         let partId = _get(media, 'Part[0].$.id')
-        items.push({title, artist, file, size, partId})
+        items.push({title, artist, file, size, partId, ratingKey})
       })
       let {subset} = pick(items, bytes.parse(options.maxBytes))
       
