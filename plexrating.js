@@ -1,5 +1,6 @@
 const fs = require('fs')
 const path = require('path')
+const async = require('async')
 const updatePlexRating = require('./updatePlexRating')
 
 module.exports = async function processRatings(config) {
@@ -10,14 +11,21 @@ module.exports = async function processRatings(config) {
 
   console.log(`Found ${musicFiles.length} music files to process`)
   
-  for (const file of musicFiles) {
-    try {
-      updatePlexRating(config, file).then(result => {
-        if (!result.rating) return
-        console.log(`Updated ${file}: Rating=${result.rating}${result.mood ? ', Mood=' + result.mood : ''}`)
-      })
-    } catch (err) {
-      console.error(`Failed to process ${file}:`, err.message)
-    }
-  }
+  await new Promise((resolve, reject) => {
+    async.eachLimit(musicFiles, 2, async (file, callback) => {
+      try {
+        const result = await updatePlexRating(config, file)
+        if (result.rating) {
+          console.log(`Updated ${file}: Rating=${result.rating}${result.mood ? ', Mood=' + result.mood : ''}`)
+        }
+        callback()
+      } catch (err) {
+        console.error(`Failed to process ${file}:`, err.message)
+        callback(err)
+      }
+    }, (err) => {
+      if (err) reject(err)
+      else resolve()
+    })
+  })
 }
