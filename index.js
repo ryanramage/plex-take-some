@@ -23,30 +23,19 @@ const options = require('rc')('plextakesome', {
 let hostname = `${options.host}`
 if (options.plexPort) hostname = `${hostname}:${options.plexPort}`
 
-if (options.rating) {
-  // Process ratings mode
-  processRatings(options)
-    .catch(err => console.error('Rating processing failed:', err))
-} else if (options.list) {
-  // List playlists
-  let url = `http://${hostname}/playlists`
-  let qs = {
-    'X-Plex-Token': options.token
-  }
-  request({url, qs}, (err, _resp, body) => {
-    if (err) return console.error('Error fetching playlists:', err)
-    parseString(body, (err, result) => {
-      if (err) return console.error('Error parsing response:', err)
-      const playlists = _get(result, 'MediaContainer.Playlist', [])
-      console.log('\nAvailable Playlists:')
-      console.log('-------------------')
-      playlists.forEach(playlist => {
-        console.log(`ID: ${_get(playlist, '$.ratingKey')} - ${_get(playlist, '$.title')}`)
-      })
-      console.log()
-    })
-  })
+if (options.list) {
+  list()
 } else {
+  if (options.rating) {
+    processRatings(options)
+    .then(() => doDownload())
+    .catch(err => console.error('Rating processing failed:', err))
+  } else {
+    doDownload()
+  }
+}
+
+function doDownload() {
   // Download tracks
   let url = `http://${hostname}/playlists/${options.playlist}/items`
   let qs = {
@@ -58,7 +47,6 @@ if (options.rating) {
       let rows = _get(result, 'MediaContainer.Track', [])
       let items = []
       rows.forEach(row => {
-        console.log(JSON.stringify(row))
         let title = _get(row, '$.title')
         let ratingKey = _get(row, '$.ratingKey')
         let artist = _get(row, '$.grandparentTitle')
@@ -83,12 +71,31 @@ if (options.rating) {
         console.log(`Cleared contents of ${options.saveDir}`)
       }
 
-      download(options, subset, (err, files) => {
+      download(options, subset, (err) => {
         if (err) return console.log('an error occurred', err)
         console.log(`finished. Files saved to: ${options.saveDir}`)
-        //console.log(files)
         console.log(`Total size of picked files: ${bytes(totalSize)}`)
       })
+    })
+  })
+}
+
+function list () {
+  let url = `http://${hostname}/playlists`
+  let qs = {
+    'X-Plex-Token': options.token
+  }
+  request({url, qs}, (err, _resp, body) => {
+    if (err) return console.error('Error fetching playlists:', err)
+    parseString(body, (err, result) => {
+      if (err) return console.error('Error parsing response:', err)
+      const playlists = _get(result, 'MediaContainer.Playlist', [])
+      console.log('\nAvailable Playlists:')
+      console.log('-------------------')
+      playlists.forEach(playlist => {
+        console.log(`ID: ${_get(playlist, '$.ratingKey')} - ${_get(playlist, '$.title')}`)
+      })
+      console.log()
     })
   })
 }

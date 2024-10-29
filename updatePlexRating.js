@@ -5,7 +5,7 @@ const rating = require('./rating')
 function updatePlexRating(config, file) {
   return new Promise((resolve, reject) => {
     const fullPath = path.join(config.saveDir, file)
-    const skip = (message) => {
+    const skip = () => {
       resolve({ file })
     }
     
@@ -14,12 +14,14 @@ function updatePlexRating(config, file) {
         if (!plexId) return skip('No Plex ID found in file, skipping')
         if (!rating) return skip('No rating found in file')
           
+        let fullRating = rating
+        if (fullRating > 10) fullRating = 10
         
         // Construct Plex API URL for rating update using plexId from ID3 tag
         const url = `http://${config.host}${config.plexPort ? ':' + config.plexPort : ''}/:/rate`
         const qs = {
           'X-Plex-Token': config.token,
-          'rating': rating * 2, // Convert 5-star to 10-point scale
+          'rating': fullRating, // 10-point scale
           'identifier': 'com.plexapp.plugins.library',
           'key': `${plexId}`
         }
