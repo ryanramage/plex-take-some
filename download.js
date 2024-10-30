@@ -30,9 +30,11 @@ function download(config, pick, done) {
   request(downloadUrl)
     .pipe(fs.createWriteStream(localPath))
     .on('finish', () => {
-      // Write Plex ID to publisher tag
+      // Write Plex ID, artist, and album to tags
       const tags = {
-        publisher: pick.ratingKey.toString()
+        publisher: pick.ratingKey.toString(),
+        artist: pick.artist || 'Unknown Artist',
+        album: pick.album || 'Unknown Album'
       }
       NodeID3.write(tags, localPath, (err) => {
         if (err) {
