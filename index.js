@@ -50,11 +50,12 @@ function doDownload() {
         let title = _get(row, '$.title')
         let ratingKey = _get(row, '$.ratingKey')
         let artist = _get(row, '$.grandparentTitle')
+        let album = _get(row, '$.parentTitle')
         let media = _get(row, 'Media[0]')
         let file = _get(media, 'Part[0].$.file')
         let size = Number(_get(media, 'Part[0].$.size'))
         let partId = _get(media, 'Part[0].$.id')
-        items.push({title, artist, file, size, partId, ratingKey})
+        items.push({title, artist, album, file, size, partId, ratingKey})
       })
       let {subset} = pick(items, bytes.parse(options.maxBytes))
       
